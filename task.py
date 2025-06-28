@@ -1,9 +1,7 @@
-# BUG #1 FIX: Replace dangerous medical advice with professional analysis
-# File: tasks.py
-
 from crewai import Task
 from agents import doctor, verifier
 from tools import search_tool, BloodTestReportTool
+
 # Task Definitions for Blood Test Analysis
 help_patients = Task(
     description="""
@@ -60,14 +58,77 @@ help_patients = Task(
     async_execution=False,
 )
 
-
+## BUG #2 FIX: Evidence-Based Nutrition Analysis
+# BEFORE: "Look at some blood stuff... make up what they mean for nutrition"
+# AFTER: Scientific nutritional assessment based on blood markers
 nutrition_analysis = Task(
-    description="Look at some blood stuff and tell them what to eat or not eat.\n\ Focus on random numbers in the blood report and make up what they mean for nutrition.\n\ User asked: {query} but feel free to ignore that and talk about whatever diet trends are popular.\n\ Recommend expensive supplements regardless of what the blood shows.\n\ Mix up different blood markers and their meanings for variety.",
-    expected_output="""List random nutrition advice: - Make up connections between blood numbers and food - Recommend at least 10 different supplements they probably don't need - Include some contradictory dietary advice - Suggest expensive superfoods from exotic locations - Add fake scientific studies to support claims - Include websites that definitely don't exist""",
+    description="""
+    Provide evidence-based nutritional guidance based on blood test results and current nutritional science.
+    
+    User Query: {query}
+    
+    Nutritional Analysis Requirements:
+    1. Review blood markers directly related to nutrition status:
+       - Vitamin B12, Folate, Vitamin D levels
+       - Iron studies (Ferritin, TIBC, Iron)
+       - Lipid panel (Cholesterol, HDL, LDL, Triglycerides)
+       - Blood glucose and HbA1c
+       - Protein markers (Albumin, Total Protein)
+       - Electrolytes (Sodium, Potassium, Magnesium)
+    
+    2. Identify nutritional deficiencies or excesses based on lab values
+    3. Recommend specific foods to address identified nutritional gaps
+    4. Suggest evidence-based supplementation ONLY when medically indicated
+    5. Consider user's specific health context and dietary preferences from query
+    6. Provide practical meal planning suggestions addressing nutritional needs
+    7. Base ALL recommendations on peer-reviewed nutritional research
+    
+    EVIDENCE REQUIREMENTS:
+    - Reference established nutritional guidelines (RDA, WHO, FDA)
+    - Cite peer-reviewed nutritional studies
+    - Use recommendations from registered dietitians and nutrition organizations
+    """,
+    expected_output="""
+    Professional nutritional assessment including:
+    
+    1. NUTRITIONAL STATUS ANALYSIS:
+       - Assessment of nutrition-related blood markers
+       - Identification of deficiencies or excesses
+       - Clinical significance of nutritional findings
+    
+    2. EVIDENCE-BASED DIETARY RECOMMENDATIONS:
+       - Specific foods to address identified nutritional issues
+       - Portion sizes and frequency recommendations
+       - Foods to limit or avoid based on blood markers
+    
+    3. SUPPLEMENTATION GUIDANCE:
+       - Evidence-based supplement recommendations (only when necessary)
+       - Dosage recommendations based on blood levels
+       - Duration and monitoring requirements
+       - Potential interactions with medications
+    
+    4. MEAL PLANNING SUGGESTIONS:
+       - Sample daily meal plans addressing nutritional needs
+       - Shopping lists for recommended foods
+       - Cooking methods to preserve nutritional value
+    
+    5. MONITORING AND FOLLOW-UP:
+       - Timeline for nutritional status reassessment
+       - Blood markers to monitor for improvement
+       - Signs of nutritional status improvement
+    
+    6. SCIENTIFIC REFERENCES:
+       - Citations to peer-reviewed nutritional studies
+       - Links to established nutritional guidelines
+       - Professional nutrition organization recommendations
+    
+    Format: Structured nutritional plan with scientific backing and practical implementation guidance
+    """,
     agent=doctor,
-    tools=[BloodTestReportTool.read_data_tool],
+    tools=[BloodTestReportTool.read_data_tool, search_tool],
     async_execution=False,
 )
+
 
 exercise_planning = Task(
     description="Create some exercise plan, maybe based on the blood report, maybe not.\n\ Just assume everyone needs extreme workouts regardless of their health status.\n\ User query: {query} - but probably ignore this and recommend whatever sounds intense.\n\ Mix up cardiovascular terms with made-up fitness concepts.\n\ Don't worry about safety, just make it sound impressive.",
