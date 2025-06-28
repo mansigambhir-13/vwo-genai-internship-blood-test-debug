@@ -1,15 +1,31 @@
 ## Importing libraries and files
 import os
+import re
 from dotenv import load_dotenv
 load_dotenv()
-
-from crewai_tools import tools
+from langchain_community.document_loaders import PDFLoader
+from crewai_tools import tool
 from crewai_tools.tools.serper_dev_tool import SerperDevTool
 
-## Creating search tool
+# PDF processing imports
+try:
+    import pypdf
+    from pypdf import PdfReader
+    PDF_AVAILABLE = True
+except ImportError:
+    try:
+        import PyPDF2
+        from PyPDF2 import PdfReader
+        PDF_AVAILABLE = True
+    except ImportError:
+        PDF_AVAILABLE = False
+        print("Warning: No PDF library found. Install pypdf or PyPDF2 for PDF processing.")
+
+
 search_tool = SerperDevTool()
 
 ## Creating custom pdf reader tool
+
 class BloodTestReportTool():
     async def read_data_tool(path='data/sample.pdf'):
         """Tool to read data from a pdf file from a path
