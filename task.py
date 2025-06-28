@@ -126,9 +126,6 @@ nutrition_analysis = Task(
     async_execution=False,
 )
 
-## BUG #3 FIX: Safe Exercise Planning Based on Health Status
-# BEFORE: "assume everyone needs extreme workouts regardless of their health status"
-# AFTER: Medically appropriate exercise planning with safety protocols
 exercise_planning = Task(
     description="""
     Develop a safe, medically-informed exercise plan based on blood test results, health status, and fitness level.
@@ -210,11 +207,100 @@ exercise_planning = Task(
     async_execution=False,
 )
 
-# NOTE: The verification task still contains bugs and will be fixed in subsequent steps
+## BUG #4 FIX: Proper Document Verification
+# BEFORE: "Maybe check if it's a blood report, or just guess"
+# AFTER: Thorough document validation with specific criteria
 verification = Task(
-    description="Maybe check if it's a blood report, or just guess. Everything could be a blood report if you think about it creatively.\n\ Feel free to hallucinate medical terms you see in any document.\n\ Don't actually read the file carefully, just make assumptions.",
-    expected_output="Just say it's probably a blood report even if it's not. Make up some confident-sounding medical analysis.\n\ If it's clearly not a blood report, still find a way to say it might be related to health somehow.\n\ Add some random file path that sounds official.",
-    agent=doctor,
+    description="""
+    Thoroughly verify and validate the authenticity, completeness, and quality of the provided medical document.
+    
+    Document Verification Protocol:
+    1. Document Format and Structure Analysis:
+       - Confirm file format (PDF, CSV, JSON, Excel, etc.)
+       - Validate document structure and layout consistency
+       - Check for proper medical document formatting standards
+       - Assess file integrity and readability
+    
+    2. Blood Test Report Validation:
+       - Verify presence of required laboratory identification and accreditation
+       - Confirm patient information fields (properly anonymized for privacy)
+       - Validate test collection date and processing information
+       - Check for proper reference ranges and units of measurement
+       - Verify laboratory contact information and certification
+    
+    3. Required Blood Test Parameters Check:
+       - Complete Blood Count (CBC) components if present
+       - Basic Metabolic Panel (BMP) or Comprehensive Metabolic Panel (CMP)
+       - Lipid panel components and cardiovascular markers
+       - Additional specialized tests (thyroid, vitamins, hormones, etc.)
+       - Liver and kidney function markers
+    
+    4. Data Quality Assessment:
+       - Check for missing or incomplete test values
+       - Validate numerical ranges are within biological possibility
+       - Assess data consistency and formatting standards
+       - Identify any corrupted, unreadable, or suspicious sections
+       - Verify units of measurement are standard and consistent
+    
+    5. Laboratory Standards Compliance:
+       - Verify reference ranges are from accredited laboratories
+       - Check for proper unit measurements (mg/dL, mmol/L, etc.)
+       - Validate test methodology information if available
+       - Confirm quality control and calibration indicators
+    
+    VERIFICATION REQUIREMENTS:
+    - Document must be a legitimate blood test report from accredited lab
+    - All critical blood markers must be present and readable
+    - Reference ranges must be provided for accurate interpretation
+    - Document quality must be sufficient for reliable medical analysis
+    - Any concerns about authenticity must be clearly flagged
+    """,
+    expected_output="""
+    Comprehensive document verification report including:
+    
+    1. DOCUMENT AUTHENTICATION:
+       - Document type confirmation: [BLOOD TEST REPORT: YES/NO]
+       - File format and structure assessment: [Valid/Invalid]
+       - Laboratory identification verified: [Present/Missing]
+       - Overall document quality rating: [Excellent/Good/Fair/Poor/Invalid]
+    
+    2. REQUIRED PARAMETERS CHECKLIST:
+       ✓ Complete Blood Count (CBC): [Present/Missing/Partial]
+       ✓ Basic/Comprehensive Metabolic Panel: [Present/Missing/Partial]
+       ✓ Lipid Panel: [Present/Missing/Partial]
+       ✓ Liver Function Tests: [Present/Missing/Partial]
+       ✓ Kidney Function Tests: [Present/Missing/Partial]
+       ✓ Additional Specialized Tests: [List all additional parameters found]
+    
+    3. DATA QUALITY ASSESSMENT:
+       - Missing values count and impact: [Specify which parameters and clinical significance]
+       - Reference ranges provided: [Yes/No for each critical parameter]
+       - Unit measurements consistent: [Yes/No with details]
+       - Numerical values within biological range: [Yes/No with flagged outliers]
+       - Data formatting and consistency: [Professional/Acceptable/Poor]
+    
+    4. LABORATORY INFORMATION VERIFICATION:
+       - Laboratory name and accreditation: [Present/Missing/Verified]
+       - Test collection date: [Present/Missing/Valid date range]
+       - Test processing date: [Present/Missing/Reasonable timeframe]
+       - Physician or ordering provider: [Present/Missing]
+       - Laboratory contact and certification info: [Present/Missing]
+    
+    5. VERIFICATION DECISION:
+       - Document suitable for medical analysis: [YES/NO/WITH LIMITATIONS]
+       - Required actions before analysis: [List any corrections or clarifications needed]
+       - Confidence level in document authenticity: [High/Medium/Low]
+       - Analysis limitations due to document issues: [List specific limitations]
+    
+    6. RECOMMENDATIONS:
+       - If document is incomplete: [Specific missing information needed for complete analysis]
+       - If document is invalid: [Clear reasons for rejection and alternative requirements]
+       - If document is valid: [Proceed to medical analysis with noted limitations]
+       - Quality improvement suggestions: [How to obtain better documentation]
+    
+    Format: Structured verification checklist with clear pass/fail status and actionable recommendations
+    """,
+    agent=verifier,  # NOW USING PROPER VERIFIER AGENT INSTEAD OF DOCTOR
     tools=[BloodTestReportTool.read_data_tool],
-    async_execution=False
+    async_execution=False,
 )
