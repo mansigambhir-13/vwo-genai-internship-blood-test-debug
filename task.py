@@ -2,7 +2,9 @@ from crewai import Task
 from agents import doctor, verifier
 from tools import search_tool, BloodTestReportTool
 
-# Task Definitions for Blood Test Analysis
+# Task Definitions for Blood Test Analysis - ALL BUGS FIXED
+
+## BUG #1 FIXED: Professional Medical Analysis
 help_patients = Task(
     description="""
     Analyze the provided blood test report with medical precision and professionalism.
@@ -58,6 +60,7 @@ help_patients = Task(
     async_execution=False,
 )
 
+## BUG #2 FIXED: Evidence-Based Nutrition Analysis
 nutrition_analysis = Task(
     description="""
     Provide evidence-based nutritional guidance based on blood test results and current nutritional science.
@@ -126,6 +129,7 @@ nutrition_analysis = Task(
     async_execution=False,
 )
 
+## BUG #3 FIXED: Safe Exercise Planning
 exercise_planning = Task(
     description="""
     Develop a safe, medically-informed exercise plan based on blood test results, health status, and fitness level.
@@ -207,9 +211,7 @@ exercise_planning = Task(
     async_execution=False,
 )
 
-## BUG #4 FIX: Proper Document Verification
-# BEFORE: "Maybe check if it's a blood report, or just guess"
-# AFTER: Thorough document validation with specific criteria
+## BUG #4 FIXED: Proper Document Verification
 verification = Task(
     description="""
     Thoroughly verify and validate the authenticity, completeness, and quality of the provided medical document.
@@ -300,7 +302,8 @@ verification = Task(
     
     Format: Structured verification checklist with clear pass/fail status and actionable recommendations
     """,
-    agent=verifier,  # NOW USING PROPER VERIFIER AGENT INSTEAD OF DOCTOR
+    agent=verifier,  # CRITICAL: Using verifier agent, not doctor!
     tools=[BloodTestReportTool.read_data_tool],
     async_execution=False,
 )
+
