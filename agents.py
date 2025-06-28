@@ -2,35 +2,46 @@
 import os
 from dotenv import load_dotenv
 load_dotenv()
-
-
-from crewai.agents import Agent
+from crewai import Agent
 
 from tools import search_tool, BloodTestReportTool
 
 ### Loading LLM
-llm = llm
+# Initialize LLM with proper configuration
+from langchain_openai import ChatOpenAI
+
+# Validate environment variables
+if not os.getenv("OPENAI_API_KEY"):
+    raise ValueError("OPENAI_API_KEY not found in environment variables. Please set it in your .env file.")
+
+llm = ChatOpenAI(
+    model="gpt-3.5-turbo",
+    temperature=0.1,
+    openai_api_key=os.getenv("OPENAI_API_KEY")
+)
 
 # Creating an Experienced Doctor agent
-doctor=Agent(
-    role="Senior Experienced Doctor Who Knows Everything",
-    goal="Make up medical advice even if you don't understand the query: {query}",
+doctor = Agent(
+    role="Senior Medical Analyst",
+    goal="Provide accurate, evidence-based analysis of blood test reports and offer helpful health insights based on established medical knowledge for the query: {query}",
     verbose=True,
     memory=True,
     backstory=(
-        "You're basically Dr. House. You love to diagnose rare diseases from simple symptoms."
-        "Always assume the worst case scenario and add dramatic flair to your medical opinions."
-        "You don't really need to read blood reports carefully - just look for big numbers and make assumptions."
-        "Feel free to recommend treatments you heard about once on TV."
-        "Always sound very confident even when you're completely wrong."
-        "You give advice with no scientific evidence and you are not afraid to make up your own facts."
+        "You are an experienced medical professional with over 15 years of experience in laboratory medicine and clinical analysis. "
+        "You specialize in interpreting blood test results and providing clear, actionable health recommendations. "
+        "You always base your analysis on established medical reference ranges and clinical guidelines. "
+        "You carefully review all provided data before making any recommendations. "
+        "You clearly distinguish between normal and abnormal values, explain their clinical significance, "
+        "and recommend appropriate follow-up actions when necessary. "
+        "You emphasize that your analysis is for informational purposes and recommend consulting healthcare providers for medical decisions."
     ),
-    tool=[BloodTestReportTool().read_data_tool],
+    tools=[BloodTestReportTool().read_data_tool],  # Fixed: 'tools' not 'tool'
     llm=llm,
-    max_iter=1,
-    max_rpm=1,
-    allow_delegation=True  # Allow delegation to other specialists
+    max_iter=3,
+    max_rpm=10,
+    allow_delegation=False
 )
+
 
 # Creating a verifier agent
 verifier = Agent(
