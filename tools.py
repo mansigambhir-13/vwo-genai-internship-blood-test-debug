@@ -37,20 +37,40 @@ class BloodTestReportTool():
         Returns:
             str: Full Blood Test report file
         """
-        docs = PDFLoader(file_path=path).load()
+        if not PDF_AVAILABLE:
+            return "Error: PDF processing library not available. Please install pypdf or PyPDF2."
         
-        full_report = ""
-        for data in docs:
-            # Clean and format the report data
-            content = data.page_content
+        try:
+            full_report = ""
+            
+            with open(path, 'rb') as file:
+                pdf_reader = PdfReader(file)
+                
+                # Extract text from all pages
+                for page_num, page in enumerate(pdf_reader.pages):
+                    page_text = page.extract_text()
+                    if page_text:
+                        full_report += page_text + "\n"
             
             # Remove extra whitespaces and format properly
-            while "\n\n" in content:
-                content = content.replace("\n\n", "\n")
+            while "\n\n" in full_report:
+                full_report = full_report.replace("\n\n", "\n")
             
-            full_report += content + "\n"
-        
-        return full_report
+            return full_report
+            
+        except Exception as e:
+            return f"Error reading PDF file: {str(e)}"
+            for data in docs:
+                # Clean and format the report data
+                content = data.page_content
+                
+                # Remove extra whitespaces and format properly
+                while "\n\n" in content:
+                    content = content.replace("\n\n", "\n")
+                
+                full_report += content + "\n"
+            
+            return full_report
 
 class NutritionTool:
     @tool("Analyze Nutrition from Blood Work")
