@@ -1,8 +1,9 @@
 from crewai import Task
 from agents import doctor, verifier
-from tools import search_tool, BloodTestReportTool
+# FIXED: Import the corrected tools
+from tools import search_tool, read_blood_test_report
 
-# Task Definitions for Blood Test Analysis - ALL BUGS FIXED INCLUDING DEPENDENCIES
+# Task Definitions for Blood Test Analysis - ALL BUGS FIXED INCLUDING COMPATIBILITY
 
 ## BUG #5 FIX: Proper Task Dependencies and Workflow
 # BEFORE: All tasks ran independently without context
@@ -100,7 +101,7 @@ verification = Task(
     Format: Structured verification checklist with clear pass/fail status and actionable recommendations
     """,
     agent=verifier,
-    tools=[BloodTestReportTool.read_data_tool],
+    tools=[read_blood_test_report],  # FIXED: Use correct tool function
     async_execution=False,
     # NO CONTEXT - This is the first task in the workflow
 )
@@ -116,7 +117,7 @@ help_patients = Task(
     Use the verification results to understand data quality and limitations.
     
     Your responsibilities:
-    1. Parse the blood test report data accurately using the BloodTestReportTool
+    1. Parse the blood test report data accurately using the blood test reading tool
     2. Identify any values outside normal reference ranges
     3. Provide evidence-based medical interpretation based on current medical standards
     4. Reference established medical guidelines (AMA, WHO, medical journals)
@@ -166,7 +167,7 @@ help_patients = Task(
     Format: Professional medical report with proper medical terminology and citations
     """,
     agent=doctor,
-    tools=[BloodTestReportTool.read_data_tool, search_tool],
+    tools=[read_blood_test_report, search_tool],  # FIXED: Use correct tool functions
     async_execution=False,
     context=[verification],  # BUG #5 FIX: Depends on verification results
 )
@@ -245,7 +246,7 @@ nutrition_analysis = Task(
     Format: Structured nutritional plan with scientific backing and practical implementation guidance
     """,
     agent=doctor,
-    tools=[BloodTestReportTool.read_data_tool, search_tool],
+    tools=[read_blood_test_report, search_tool],  # FIXED: Use correct tool functions
     async_execution=False,
     context=[verification, help_patients],  # BUG #5 FIX: Depends on verification AND medical analysis
 )
@@ -335,7 +336,7 @@ exercise_planning = Task(
     Format: Progressive exercise prescription with comprehensive safety protocols and medical considerations
     """,
     agent=doctor,
-    tools=[BloodTestReportTool.read_data_tool, search_tool],
+    tools=[read_blood_test_report, search_tool],  # FIXED: Use correct tool functions
     async_execution=False,
     context=[verification, help_patients, nutrition_analysis],  # BUG #5 FIX: Depends on ALL previous analyses
 )
@@ -406,7 +407,7 @@ integrated_health_summary = Task(
     Format: Executive-level health summary suitable for patient and healthcare provider coordination
     """,
     agent=doctor,
-    tools=[search_tool],
+    tools=[search_tool],  # FIXED: Use correct tool function
     async_execution=False,
     context=[verification, help_patients, nutrition_analysis, exercise_planning],  # BUG #5 FIX: Depends on ALL analyses
 )

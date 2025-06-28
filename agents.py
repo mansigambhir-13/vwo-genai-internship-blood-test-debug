@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 load_dotenv()
 from crewai import Agent
 
-from tools import search_tool, BloodTestReportTool
+# FIXED: Import the corrected tools
+from tools import search_tool, read_blood_test_report
 
 ### Loading LLM
 # Initialize LLM with proper configuration
@@ -20,7 +21,7 @@ llm = ChatOpenAI(
     openai_api_key=os.getenv("OPENAI_API_KEY")
 )
 
-# Creating an Experienced Doctor agent
+# FIXED: Creating an Experienced Doctor agent with correct tool reference
 doctor = Agent(
     role="Senior Medical Analyst",
     goal="Provide accurate, evidence-based analysis of blood test reports and offer helpful health insights based on established medical knowledge for the query: {query}",
@@ -35,15 +36,14 @@ doctor = Agent(
         "and recommend appropriate follow-up actions when necessary. "
         "You emphasize that your analysis is for informational purposes and recommend consulting healthcare providers for medical decisions."
     ),
-    tools=[BloodTestReportTool().read_data_tool],  # Fixed: 'tools' not 'tool'
+    tools=[read_blood_test_report, search_tool],  # FIXED: Use the correct tool functions
     llm=llm,
     max_iter=3,
     max_rpm=10,
     allow_delegation=False
 )
 
-
-# Fixed Verifier Agent
+# FIXED: Verifier Agent with correct tool reference
 verifier = Agent(
     role="Blood Report Validator",
     goal="Carefully validate and verify that uploaded files contain legitimate blood test data and ensure data quality before analysis.",
@@ -56,14 +56,16 @@ verifier = Agent(
         "You check for completeness of data, proper formatting, and identify any missing critical information. "
         "You flag any inconsistencies or potential data quality issues that could affect analysis accuracy."
     ),
-    tools=[BloodTestReportTool().read_data_tool],
+    tools=[read_blood_test_report],  # FIXED: Use the correct tool function
     llm=llm,
     max_iter=2,
     max_rpm=10,
     allow_delegation=False
 )
 
-# Fixed Nutritionist Agent
+# OPTIONAL: Additional agents (currently unused in task.py but kept for future use)
+# You can remove these if you want to clean up unused code
+
 nutritionist = Agent(
     role="Clinical Nutritionist",
     goal="Provide evidence-based nutritional recommendations based on blood test results, focusing on dietary modifications that could help optimize the measured parameters.",
@@ -77,14 +79,13 @@ nutritionist = Agent(
         "You focus on sustainable dietary changes and always consider individual health conditions and contraindications. "
         "You work collaboratively with healthcare teams to support optimal patient outcomes through nutrition."
     ),
-    tools=[BloodTestReportTool().read_data_tool],
+    tools=[read_blood_test_report],  # FIXED: Use the correct tool function
     llm=llm,
     max_iter=2,
     max_rpm=10,
     allow_delegation=False
 )
 
-# Fixed Exercise Specialist Agent  
 exercise_specialist = Agent(
     role="Clinical Exercise Physiologist",
     goal="Recommend safe, evidence-based exercise modifications based on blood test results, considering any health conditions that may affect exercise prescription.",
@@ -98,7 +99,7 @@ exercise_specialist = Agent(
         "You collaborate with healthcare providers to ensure exercise prescriptions are appropriate and beneficial. "
         "You believe in gradual progression and sustainable lifestyle changes rather than extreme interventions."
     ),
-    tools=[BloodTestReportTool().read_data_tool],
+    tools=[read_blood_test_report],  # FIXED: Use the correct tool function
     llm=llm,
     max_iter=2,
     max_rpm=10,
