@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+venv/
+
+# Environment
+.env
+*.env
+config.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+crew_logs/
+
+# CrewAI
+*.pkl
+crew_cache/
+
+# Outputs
+outputs/
+temp/
+results/
