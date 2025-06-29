@@ -1,0 +1,59 @@
+
+COMPREHENSIVE BLOOD TEST REPORT - INTEGRATION TEST
+Laboratory: VWO Medical Diagnostics Center
+Date Collected: 2025-06-29
+Date Processed: 2025-06-29
+Patient ID: VWO-INT-TEST-001
+
+===================================================================
+COMPLETE BLOOD COUNT (CBC) WITH DIFFERENTIAL
+===================================================================
+White Blood Cells (WBC): 7.2 K/uL (Reference: 4.0-11.0)
+Red Blood Cells (RBC): 4.5 M/uL (Reference: 4.2-5.9)
+Hemoglobin: 14.2 g/dL (Reference: 12.0-16.0)
+Hematocrit: 42.1% (Reference: 36.0-48.0)
+Platelets: 285 K/uL (Reference: 150-450)
+
+===================================================================
+COMPREHENSIVE METABOLIC PANEL (CMP)
+===================================================================
+Glucose: 95 mg/dL (Reference: 70-100) [Fasting]
+Blood Urea Nitrogen (BUN): 15 mg/dL (Reference: 7-20)
+Creatinine: 0.9 mg/dL (Reference: 0.6-1.2)
+
+ELECTROLYTES:
+Sodium: 140 mEq/L (Reference: 136-145)
+Potassium: 4.2 mEq/L (Reference: 3.5-5.0)
+Chloride: 102 mEq/L (Reference: 98-107)
+
+===================================================================
+LIPID PANEL (FASTING)
+===================================================================
+Total Cholesterol: 185 mg/dL (Reference: <200) [DESIRABLE]
+HDL Cholesterol: 58 mg/dL (Reference: >40) [GOOD]
+LDL Cholesterol: 110 mg/dL (Reference: <100) [NEAR OPTIMAL]
+Triglycerides: 85 mg/dL (Reference: <150) [NORMAL]
+
+===================================================================
+LIVER FUNCTION TESTS
+===================================================================
+Alanine Aminotransferase (ALT): 25 U/L (Reference: 7-56)
+Aspartate Aminotransferase (AST): 22 U/L (Reference: 10-40)
+Total Bilirubin: 0.8 mg/dL (Reference: 0.2-1.2)
+
+===================================================================
+THYROID FUNCTION TESTS
+===================================================================
+Thyroid Stimulating Hormone (TSH): 2.1 mIU/L (Reference: 0.4-4.0)
+Free Thyroxine (Free T4): 1.2 ng/dL (Reference: 0.8-1.8)
+
+===================================================================
+VITAMIN AND MINERAL LEVELS
+===================================================================
+Vitamin D, 25-OH Total: 32 ng/mL (Reference: 30-100) [ADEQUATE]
+Vitamin B12: 350 pg/mL (Reference: 200-900)
+Iron: 85 mcg/dL (Reference: 60-170)
+Ferritin: 45 ng/mL (Reference: 12-150)
+
+End of Report - Integration Test Data
+Generated for VWO GenAI Internship Assignment Testing
