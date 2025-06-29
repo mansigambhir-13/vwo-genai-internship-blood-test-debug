@@ -9,7 +9,33 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from crewai.tools import tool
-from crewai_tools.tools.serper_dev_tool import SerperDevTool
+
+# FIXED: Single, correct import for SerperDevTool with error handling
+try:
+    from crewai_tools import SerperDevTool
+    SERPER_AVAILABLE = True
+except ImportError:
+    try:
+        from crewai_tools.tools.serper_dev_tool import SerperDevTool
+        SERPER_AVAILABLE = True
+    except ImportError:
+        print("⚠️  SerperDevTool not available, using mock implementation")
+        SERPER_AVAILABLE = False
+        
+        # Mock SerperDevTool for development/testing
+        class SerperDevTool:
+            def __init__(self, api_key=None):
+                self.api_key = api_key or os.getenv('SERPER_API_KEY')
+                print("🔧 Using mock SerperDevTool for development")
+            
+            def search(self, query):
+                return {
+                    "results": [{
+                        "title": "Mock Search Result", 
+                        "snippet": f"Mock result for query: {query}",
+                        "link": "https://example.com"
+                    }]
+                }
 
 # PDF processing imports
 try:
@@ -23,10 +49,24 @@ except ImportError:
         PDF_AVAILABLE = True
     except ImportError:
         PDF_AVAILABLE = False
-        print("Warning: No PDF library found. Install pypdf or PyPDF2 for PDF processing.")
+        print("⚠️  Warning: No PDF library found. Install pypdf or PyPDF2 for PDF processing.")
 
-## Creating search tool
-search_tool = SerperDevTool()
+# FIXED: Creating search tool with proper error handling
+def create_search_tool():
+    """Create search tool with proper error handling"""
+    try:
+        api_key = os.getenv('SERPER_API_KEY')
+        if api_key and SERPER_AVAILABLE:
+            return SerperDevTool(api_key=api_key)
+        else:
+            if not api_key:
+                print("⚠️  SERPER_API_KEY not found in environment variables")
+            return SerperDevTool()  # Will use mock if not available
+    except Exception as e:
+        print(f"⚠️  Error creating search tool: {e}")
+        return SerperDevTool()  # Fallback to mock
+
+search_tool = create_search_tool()
 
 ## FIXED: Proper tool definition using @tool decorator on standalone functions
 @tool("Read Blood Test Report")
@@ -324,5 +364,48 @@ def _generate_exercise_recommendations(health_markers: dict) -> str:
     
     return plan
 
+# Validation function for external use
+def validate_blood_test_file(file_path: str) -> bool:
+    """
+    Validate blood test file before processing
+    
+    Args:
+        file_path (str): Path to validate
+        
+    Returns:
+        bool: True if valid, raises exception if invalid
+    """
+    if not file_path:
+        raise ValueError("File path cannot be empty")
+    
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"File does not exist: {file_path}")
+    
+    # Check file extension
+    valid_extensions = ['.txt', '.pdf', '.doc', '.docx', '.csv']
+    file_ext = os.path.splitext(file_path)[1].lower()
+    
+    if file_ext not in valid_extensions:
+        raise ValueError(f"Unsupported file type: {file_ext}. Supported: {', '.join(valid_extensions)}")
+    
+    # Check file size (max 10MB)
+    file_size = os.path.getsize(file_path)
+    max_size = 10 * 1024 * 1024  # 10MB
+    
+    if file_size > max_size:
+        raise ValueError(f"File too large: {file_size} bytes. Max size: {max_size} bytes")
+    
+    if file_size == 0:
+        raise ValueError("File is empty")
+    
+    return True
+
 # Export tools for use in agents - FIXED for compatibility
-__all__ = ['search_tool', 'read_blood_test_report', 'BloodTestReportTool', 'analyze_nutrition_from_blood', 'create_exercise_plan_from_blood']
+__all__ = [
+    'search_tool', 
+    'read_blood_test_report', 
+    'BloodTestReportTool', 
+    'analyze_nutrition_from_blood', 
+    'create_exercise_plan_from_blood',
+    'validate_blood_test_file'
+]
